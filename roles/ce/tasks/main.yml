@@ -15,3 +15,14 @@
     puppeteers_users_unprivileged_user_home: "{{ puppeteers_plausible_ce_system_user_home }}"
     puppeteers_users_unprivileged_user_ssh_authorized_key: "{{ puppeteers_plausible_ce_ssh_authorized_key }}"
 
+- name: Install acl to ensure that Ansible is able to run as plausible user
+  ansible.builtin.package:
+    name: acl
+    state: present
+
+- name: Download container images from Docker Hub by default to avoid interactive prompts
+  ansible.builtin.lineinfile:
+    state: present
+    regexp: "^unqualified-search-registries = "
+    line: "unqualified-search-registries = [\"docker.io\"]"
+    path: /etc/containers/registries.conf

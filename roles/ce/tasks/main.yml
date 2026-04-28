@@ -15,6 +15,14 @@
     puppeteers_users_unprivileged_user_home: "{{ puppeteers_plausible_ce_system_user_home }}"
     puppeteers_users_unprivileged_user_ssh_authorized_key: "{{ puppeteers_plausible_ce_ssh_authorized_key }}"
 
+- name: Ensure that prerequisites are installed
+  ansible.builtin.package:
+    name:
+      - podman
+      - rsync
+      - git
+    state: present
+
 - name: Install acl to ensure that Ansible is able to run as plausible user
   ansible.builtin.package:
     name: acl

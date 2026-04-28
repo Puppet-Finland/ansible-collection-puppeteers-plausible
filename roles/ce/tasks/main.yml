@@ -1,0 +1,17 @@
+---
+- name: Validate parameters
+  ansible.builtin.assert:
+    that:
+      - puppeteers_plausible_ce_system_user is string
+      - puppeteers_plausible_ce_system_user_home is string
+      - puppeteers_plausible_ce_ssh_authorized_key is string
+
+- name: Create unprivileged system user for plausible
+  ansible.builtin.import_role:
+    name: puppeteers.users.unprivileged_user
+  vars:
+    puppeteers_users_unprivileged_user_name: "{{ puppeteers_plausible_ce_system_user }}"
+    puppeteers_users_unprivileged_user_comment: "Unprivileged user created for running plausible"
+    puppeteers_users_unprivileged_user_home: "{{ puppeteers_plausible_ce_system_user_home }}"
+    puppeteers_users_unprivileged_user_ssh_authorized_key: "{{ puppeteers_plausible_ce_ssh_authorized_key }}"
+

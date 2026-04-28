@@ -1,0 +1,4 @@
+---
+puppeteers_plausible_ce_system_user: plausible
+puppeteers_plausible_ce_system_user_home: /home/plausible
+puppeteers_plausible_ce_ssh_authorized_key: ""

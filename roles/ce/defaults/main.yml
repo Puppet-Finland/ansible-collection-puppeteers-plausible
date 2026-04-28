@@ -2,3 +2,7 @@
 puppeteers_plausible_ce_system_user: plausible
 puppeteers_plausible_ce_system_user_home: /home/plausible
 puppeteers_plausible_ce_ssh_authorized_key: ""
+puppeteers_plausible_ce_manage_firewalld: false
+puppeteers_plausible_ce_firewalld_zone: public
+puppeteers_plausible_ce_unprivileged_http_port: 8080
+puppeteers_plausible_ce_unprivileged_https_port: 8443

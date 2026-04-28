@@ -1,0 +1,37 @@
+- name: Allow HTTP
+  ansible.posix.firewalld:
+    service: http
+    zone: "{{ puppeteers_plausible_ce_firewalld_zone }}"
+    permanent: true
+    immediate: true
+    state: enabled
+
+- name: Allow HTTPS
+  ansible.posix.firewalld:
+    service: https
+    zone: "{{ puppeteers_plausible_ce_firewalld_zone }}"
+    permanent: true
+    immediate: true
+    state: enabled
+
+- name: Configure HTTP port forward
+  ansible.posix.firewalld:
+    zone: "{{ puppeteers_plausible_ce_firewalld_zone }}"
+    port_forward:
+      - port: 80
+        toport: "{{ puppeteers_plausible_ce_unprivileged_http_port }}"
+        proto: tcp
+    permanent: true
+    immediate: true
+    state: enabled
+
+- name: Configure HTTPS port forward
+  ansible.posix.firewalld:
+    zone: "{{ puppeteers_plausible_ce_firewalld_zone }}"
+    port_forward:
+      - port: 443
+        toport: "{{ puppeteers_plausible_ce_unprivileged_https_port }}"
+        proto: tcp
+    permanent: true
+    immediate: true
+    state: enabled

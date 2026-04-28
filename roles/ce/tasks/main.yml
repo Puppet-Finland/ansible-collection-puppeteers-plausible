@@ -34,3 +34,7 @@
     regexp: "^unqualified-search-registries = "
     line: "unqualified-search-registries = [\"docker.io\"]"
     path: /etc/containers/registries.conf
+
+- name: Manage firewalld rules, including port forwarding
+  ansible.builtin.import_tasks: firewalld.yml
+  when: puppeteers_plausible_ce_manage_firewalld

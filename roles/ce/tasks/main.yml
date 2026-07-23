@@ -5,6 +5,17 @@
       - puppeteers_plausible_ce_system_user is string
       - puppeteers_plausible_ce_system_user_home is string
       - puppeteers_plausible_ce_ssh_authorized_key is string
+      - puppeteers_plausible_ce_server_name is string
+      - puppeteers_plausible_ce_base_url is string
+      - puppeteers_plausible_ce_secret_key_base is defined
+      - puppeteers_plausible_ce_http_port is number
+      - puppeteers_plausible_ce_mailer_email is string
+      - puppeteers_plausible_ce_mailer_name is string
+      - puppeteers_plausible_ce_smtp_host_addr is string
+      - puppeteers_plausible_ce_smtp_host_port is number
+      - puppeteers_plausible_ce_smtp_user_name is string
+      - puppeteers_plausible_ce_smtp_user_pwd is defined
+      - puppeteers_plausible_ce_smtp_host_ssl_enabled is boolean
 
 - name: Create unprivileged system user for plausible
   ansible.builtin.import_role:
@@ -38,3 +49,27 @@
 - name: Manage firewalld rules, including port forwarding
   ansible.builtin.import_tasks: firewalld.yml
   when: puppeteers_plausible_ce_manage_firewalld
+
+- name: Clone plausible-ce repository
+  ansible.builtin.git:
+    repo: https://github.com/Puppet-Finland/community-edition.git
+    version: selinux_fix
+    dest: "{{ puppeteers_plausible_ce_system_user_home }}/plausible-ce"
+  become: true
+  become_user: "{{ puppeteers_plausible_ce_system_user }}"
+
+- name: Manage Plausible configuration (.env)
+  ansible.builtin.template:
+    src: templates/env.j2
+    dest: "{{ puppeteers_plausible_ce_system_user_home }}/plausible-ce/.env"
+    owner: "{{ puppeteers_plausible_ce_system_user }}"
+    group: "{{ puppeteers_plausible_ce_system_user }}"
+    mode: "0640"
+
+- name: Manage Plausible compose.override.yml
+  ansible.builtin.template:
+    src: templates/compose.override.yml.j2
+    dest: "{{ puppeteers_plausible_ce_system_user_home }}/plausible-ce/compose.override.yml"
+    owner: "{{ puppeteers_plausible_ce_system_user }}"
+    group: "{{ puppeteers_plausible_ce_system_user }}"
+    mode: "0640"

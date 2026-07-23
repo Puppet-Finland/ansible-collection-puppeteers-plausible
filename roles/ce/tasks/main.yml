@@ -94,14 +94,6 @@
     group: "{{ puppeteers_plausible_ce_system_user }}"
     mode: "0640"
 
-- name: Ensure that /etc/letsencrypt is present
-  ansible.builtin.file:
-    path: /etc/letsencrypt
-    state: directory
-    owner: root
-    group: root
-    mode: "0755"
-
 - name: Install nginx
   ansible.builtin.package:
     name: nginx

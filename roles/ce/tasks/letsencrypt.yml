@@ -4,6 +4,14 @@
     that:
       - puppeteers_plausible_ce_letsencrypt_email is string
 
+- name: Ensure that /etc/letsencrypt is present
+  ansible.builtin.file:
+    path: /etc/letsencrypt
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
 - name: Create user directory for Letsencrypt certificates
   ansible.builtin.file:
     path: "{{ puppeteers_plausible_ce_system_user_home }}/.local/share/letsencrypt"
@@ -33,7 +41,7 @@
 - name: Add cronjob to copy Letsencrypt certs to /etc/letsencrypt
   ansible.builtin.cron:
     name: "Copy Letsencrypt certs to /etc/letsencrypt if needed"
-    job: "find -L {{ puppeteers_plausible_ce_system_user_home }}/.local/share/letsencrypt/live/{{ puppeteers_plausible_ce_server_name }} -name fullchain.pem -newer /etc/letsencrypt/live/{{ puppeteers_plausible_ce_server_name }}/fullchain.pem|grep -q fullchain && /bin/rsync -rl {{ puppeteers_plausible_ce_system_user_home }}/.local/share/letsencrypt /etc/ && systemctl reload nginx"
+    job: "find -L {{ puppeteers_plausible_ce_system_user_home }}/.local/share/letsencrypt/live/{{ puppeteers_plausible_ce_server_name }} -name fullchain.pem -newer /etc/letsencrypt/live/{{ puppeteers_plausible_ce_server_name }}/fullchain.pem|grep -q fullchain && /bin/rsync -rl {{ puppeteers_plausible_ce_system_user_home }}/.local/share/letsencrypt /etc/ && restorecon -rF /etc/letsencrypt && systemctl reload nginx"
     hour: "2"
     minute: "55"
     weekday: "1"

@@ -1,8 +1,17 @@
 server {
+    server_name {{ puppeteers_plausible_ce_server_name }};
+
+    listen 8080;
+    listen [::]:8080;
+
+    return 301 https://$host$request_uri;
+}
+
+server {
     listen       8443 ssl;
     listen       [::]:8443 ssl;
     http2        on;
-    server_name  {{ puppeteers_plausible_ce_server_name }}; 
+    server_name  {{ puppeteers_plausible_ce_server_name }};
 
     ssl_certificate "/etc/letsencrypt/live/{{ puppeteers_plausible_ce_server_name }}/fullchain.pem";
     ssl_certificate_key "/etc/letsencrypt/live/{{ puppeteers_plausible_ce_server_name }}/privkey.pem";
@@ -12,12 +21,12 @@ server {
     ssl_prefer_server_ciphers on;
 
     location / {
-        proxy_pass http://127.0.0.1:8000;
+        proxy_pass http://127.0.0.1:{{ puppeteers_plausible_ce_http_port }};
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
 
     location /live/websocket {
-        proxy_pass http://127.0.0.1:8000;
+        proxy_pass http://127.0.0.1:{{ puppeteers_plausible_ce_http_port }};
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "Upgrade";

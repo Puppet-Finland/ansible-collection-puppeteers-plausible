@@ -73,3 +73,39 @@
     owner: "{{ puppeteers_plausible_ce_system_user }}"
     group: "{{ puppeteers_plausible_ce_system_user }}"
     mode: "0640"
+
+- name: Ensure that /etc/letsencrypt is present
+  ansible.builtin.file:
+    path: /etc/letsencrypt
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Install nginx
+  ansible.builtin.package:
+    name: nginx
+    state: present
+
+- name: Remove server settings from base nginx configuration
+  ansible.builtin.template:
+    src: templates/nginx.conf.j2
+    dest: /etc/nginx/nginx.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart nginx
+
+- name: Add nginx configuration for Plausible
+  ansible.builtin.template:
+    src: templates/plausible.conf.j2
+    dest: /etc/nginx/conf.d/plausible.conf
+    owner: root
+    group: root
+    mode: "0644"
+  notify: Restart nginx
+
+- name: Enable nginx
+  ansible.builtin.service:
+    name: nginx
+    enabled: true

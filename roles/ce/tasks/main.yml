@@ -26,6 +26,22 @@
     puppeteers_users_unprivileged_user_home: "{{ puppeteers_plausible_ce_system_user_home }}"
     puppeteers_users_unprivileged_user_ssh_authorized_key: "{{ puppeteers_plausible_ce_ssh_authorized_key }}"
 
+- name: Add script for restarting nginx
+  ansible.builtin.template:
+    src: templates/plausible-nginx-service.sh.j2
+    dest: /usr/local/bin/plausible-nginx-service.sh
+    owner: root
+    group: root
+    mode: "0755"
+
+- name: Allow plausible user to restart nginx
+  ansible.builtin.template:
+    src: templates/90-plausible.j2
+    dest: /etc/sudoers.d/90-plausible
+    owner: root
+    group: root
+    mode: "0640"
+
 - name: Ensure that prerequisites are installed
   ansible.builtin.package:
     name:

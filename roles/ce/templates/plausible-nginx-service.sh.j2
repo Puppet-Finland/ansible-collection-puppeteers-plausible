@@ -1,0 +1,12 @@
+#!/bin/sh
+
+# Validate parameters
+OP=$1
+
+if [ "$OP" != "start" ] && [ "$OP" != "stop" ]; then
+    echo "ERROR: invalid operation $OP"
+    exit 1
+fi
+
+# Start or stop nginx
+systemctl $OP nginx

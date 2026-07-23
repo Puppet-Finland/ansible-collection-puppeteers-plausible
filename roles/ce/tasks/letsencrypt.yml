@@ -10,12 +10,30 @@
     state: directory
     recurse: true
 
+- name: Generate podman command-line
+  ansible.builtin.set_fact:
+    podman_certbot_command: "/bin/podman run -p 8080:80 -v ~/.local/share/letsencrypt:/etc/letsencrypt:rw,Z docker.io/certbot/certbot certonly -v --non-interactive --standalone --agree-tos -m {{ puppeteers_plausible_ce_letsencrypt_email }} -d {{ puppeteers_plausible_ce_server_name }}"
+
+- name: Ensure initial Letsencrypt certificate
+  ansible.builtin.shell:
+    cmd: "test -h ~/.local/share/letsencrypt/live/{{ puppeteers_plausible_ce_server_name }}/fullchain.pem || {{ podman_certbot_command }}"
+  become: true
+  become_user: "{{ puppeteers_plausible_ce_system_user }}"
+
 - name: Add cronjob for renewing Letsencrypt renewals
   ansible.builtin.cron:
     name: "Run certbot"
-    job: "/bin/podman run -p 8080:80 -v ~/.local/share/letsencrypt:/etc/letsencrypt:rw,Z docker.io/certbot/certbot certonly -v --non-interactive --standalone --agree-tos -m {{ puppeteers_plausible_ce_letsencrypt_email }} -d {{ puppeteers_plausible_ce_server_name }}"
+    job: "{{ podman_certbot_command }}"
     hour: "2"
     minute: "45"
     weekday: "*"
   become: true
   become_user: "{{ puppeteers_plausible_ce_system_user }}"
+
+- name: Add cronjob to copy Letsencrypt certs to /etc/letsencrypt
+  ansible.builtin.cron:
+    name: "Copy Letsencrypt certs to /etc/letsencrypt"
+    job: "/bin/rsync -rl {{ puppeteers_plausible_ce_system_user_home }}/.local/share/letsencrypt /etc/"
+    hour: "2"
+    minute: "55"
+    weekday: "*"

@@ -129,3 +129,9 @@
   ansible.builtin.service:
     name: nginx
     enabled: true
+
+- name: Allow nginx to network connect in selinux
+  ansible.posix.seboolean:
+    name: httpd_can_network_connect
+    state: true
+    persistent: true

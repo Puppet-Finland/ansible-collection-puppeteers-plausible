@@ -27,6 +27,10 @@ role affects a bunch of things:
     * Adds cronjob for renewing Letsencrypt certificates weekly
     * Automatically synchronizes Letsencrypt certs from plausible user's home to /etc/letsencrypt and reloads nginx if needed
 
+This role does not, at the moment, launch the plausible-ce compose stack. It
+would be better to run it as Podman Quadlets (i.e. systemd services), but for
+now you can just "podman-compose up" it manually in a tmux session.
+
 The following ports are used:
 
 * 8000/tcp (plausible)

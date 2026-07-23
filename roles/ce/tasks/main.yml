@@ -50,6 +50,10 @@
   ansible.builtin.import_tasks: firewalld.yml
   when: puppeteers_plausible_ce_manage_firewalld
 
+- name: Manage certbot and letsencrypt renewal
+  ansible.builtin.import_tasks: letsencrypt.yml
+  when: puppeteers_plausible_ce_manage_letsencrypt
+
 - name: Clone plausible-ce repository
   ansible.builtin.git:
     repo: https://github.com/Puppet-Finland/community-edition.git

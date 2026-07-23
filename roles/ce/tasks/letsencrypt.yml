@@ -1,0 +1,21 @@
+---
+- name: Validate Letsencrypt parameters
+  ansible.builtin.assert:
+    that:
+      - puppeteers_plausible_ce_letsencrypt_email is string
+
+- name: Create user directory for Letsencrypt certificates
+  ansible.builtin.file:
+    path: "{{ puppeteers_plausible_ce_system_user_home }}/.local/share/letsencrypt"
+    state: directory
+    recurse: true
+
+- name: Add cronjob for renewing Letsencrypt renewals
+  ansible.builtin.cron:
+    name: "Run certbot"
+    job: "/bin/podman run -p 8080:80 -v ~/.local/share/letsencrypt:/etc/letsencrypt:rw,Z docker.io/certbot/certbot certonly -v --non-interactive --standalone --agree-tos -m {{ puppeteers_plausible_ce_letsencrypt_email }} -d {{ puppeteers_plausible_ce_server_name }}"
+    hour: "2"
+    minute: "45"
+    weekday: "*"
+  become: true
+  become_user: "{{ puppeteers_plausible_ce_system_user }}"
